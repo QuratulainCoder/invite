@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Legends Meet Again - Top Secret</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+        .scratch-container {
+            width: 400px;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .scratch-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                #333,
+                #333 10px,
+                #444 10px,
+                #444 20px
+            );
+            z-index: 10;
+            cursor: grab;
+        }
+        .invitation {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .secret-header {
+            font-size: 1.8rem;
+            color: #f72585;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .title {
+            font-size: 3.5rem;
+            color: #4cc9f0;
+            margin: 20px 0;
+            text-shadow: 0 0 10px rgba(76, 201, 240, 0.5);
+        }
+        .subtitle {
+            font-size: 1.8rem;
+            color: #f72585;
+            margin: 15px 0;
+        }
+        .divider {
+            width: 70%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #f72585, transparent);
+            margin: 20px auto;
+        }
+        .details {
+            font-size: 1.3rem;
+            margin: 10px 0;
+            color: #b8b8ff;
+        }
+        .warning {
+            font-size: 1rem;
+            color: #ff7096;
+            margin-top: 30px;
+            font-style: italic;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f72585;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="scratch-container">
+        <div class="scratch-overlay" id="scratchOverlay">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                <div class="secret-header">TOP SECRET MISSION</div>
+                <div class="subtitle">SCRATCH TO REVEAL</div>
+                <div class="title">SPILL THE TEA</div>
+                <div class="warning">Secret-sharing zone. Enter wisely.</div>
+            </div>
+        </div>
+        <div class="invitation" id="invitation">
+            <div class="title">LEGENDS MEET AGAIN</div>
+            <div class="divider"></div>
+            <div class="subtitle">CLASSIFIED REUNION</div>
+            <div class="divider"></div>
+            <div class="details">THIS SUNDAY</div>
+            <div class="details">12 PM ONWARDS</div>
+            <div class="details">MY HOME</div>
+            <div class="divider"></div>
+            <div class="details">BRING: Snacks & Secrets</div>
+            <div class="details">DRESS CODE: Incognito</div>
+            <div class="warning">Warning: Laughter guaranteed</div>
+        </div>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('scratchOverlay');
+        const invitation = document.getElementById('invitation');
+        let isScratching = false;
+        let scratchedPixels = 0;
+        const totalPixelsToScratch = 1500; // Adjust for sensitivity
+
+        // Create confetti elements
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            confetti.style.width = `${Math.random() * 10 + 5}px`;
+            confetti.style.height = `${Math.random() * 10 + 5}px`;
+            invitation.appendChild(confetti);
+        }
+
+        overlay.addEventListener('mousedown', () => { isScratching = true; });
+        overlay.addEventListener('mouseup', () => { isScratching = false; });
+        overlay.addEventListener('mouseleave', () => { isScratching = false; });
+
+        overlay.addEventListener('mousemove', (e) => {
+            if (!isScratching) return;
+            
+            const rect = overlay.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Create scratch effect
+            const scratch = document.createElement('div');
+            scratch.style.position = 'absolute';
+            scratch.style.left = x + 'px';
+            scratch.style.top = y + 'px';
+            scratch.style.width = '30px';
+            scratch.style.height = '30px';
+            scratch.style.borderRadius = '50%';
+            scratch.style.backgroundColor = 'transparent';
+            scratch.style.pointerEvents = 'none';
+            overlay.appendChild(scratch);
+            
+            scratchedPixels += 30;
+            
+            // Check if enough is scratched
+            if (scratchedPixels >= totalPixelsToScratch) {
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                invitation.style.display = 'flex';
+                
+                // Animate confetti
+                const confetti = document.querySelectorAll('.confetti');
+                confetti.forEach((c, i) => {
+                    setTimeout(() => {
+                        c.style.opacity = '1';
+                        c.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
+                        c.style.transition = `all ${Math.random() * 2 + 1}s ease-out`;
+                    }, i * 50);
+                });
+            }
+        });
+
+        // Touch support for mobile
+        overlay.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = overlay.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            const scratch = document.createElement('div');
+            scratch.style.position = 'absolute';
+            scratch.style.left = x + 'px';
+            scratch.style.top = y + 'px';
+            scratch.style.width = '40px';
+            scratch.style.height = '40px';
+            scratch.style.borderRadius = '50%';
+            scratch.style.backgroundColor = 'transparent';
+            overlay.appendChild(scratch);
+            
+            scratchedPixels += 40;
+            
+            if (scratchedPixels >= totalPixelsToScratch) {
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                invitation.style.display = 'flex';
+                
+                const confetti = document.querySelectorAll('.confetti');
+                confetti.forEach((c, i) => {
+                    setTimeout(() => {
+                        c.style.opacity = '1';
+                        c.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`;
+                        c.style.transition = `all ${Math.random() * 2 + 1}s ease-out`;
+                    }, i * 50);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
